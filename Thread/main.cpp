@@ -5,13 +5,22 @@
 using namespace std;
 using namespace chrono;
 
+
 int main()
 {
-	int num = 0;
-	system_clock::time_point start = system_clock::now();
-	for (int i = 0; i < INT_MAX; i++)
-		num++;
-	system_clock::time_point end = system_clock::now();
+	int shared_memory(0);
+	auto count_func = [&]() {
+		for (int i = 0; i < 1000; i++)
+		{
+			shared_memory++;
+		}
+	};
 
-	cout << duration_cast<milliseconds>(end - start).count() << "ms";
+	thread t1 = thread(count_func);
+	thread t2 = thread(count_func);
+
+	t1.join();
+	t2.join();
+
+	cout << shared_memory;
 }
